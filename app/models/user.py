@@ -19,7 +19,7 @@ class User(Base):
     )
     budget = relationship(
         "Budget",
-        back_populates="owner",
+        back_populates="user",
         uselist=False
     )
     goals = relationship(

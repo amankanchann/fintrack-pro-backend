@@ -6,14 +6,10 @@ from app.models.budget import Budget
 from app.models.user import User
 from app.schemas.budget import (
     BudgetCreate,
-    BudgetResponse,
-)
-from app.core.dependencies import get_current_user
-from app.schemas.budget import (
-    BudgetCreate,
     BudgetUpdate,
     BudgetResponse,
 )
+from app.core.dependencies import get_current_user
 
 router = APIRouter()
 
@@ -25,7 +21,7 @@ router = APIRouter()
 def create_budget(
     budget: BudgetCreate,
     current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     existing_budget = (
         db.query(Budget)
@@ -36,12 +32,12 @@ def create_budget(
     if existing_budget:
         raise HTTPException(
             status_code=400,
-            detail="Budget already exists"
+            detail="Budget already exists",
         )
 
     new_budget = Budget(
-        monthly_limit=budget.monthly_limit,
-        user_id=current_user.id
+        amount=budget.amount,
+        user_id=current_user.id,
     )
 
     db.add(new_budget)
@@ -50,13 +46,14 @@ def create_budget(
 
     return new_budget
 
+
 @router.get(
     "/",
     response_model=BudgetResponse
 )
 def get_budget(
     current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     budget = (
         db.query(Budget)
@@ -67,10 +64,11 @@ def get_budget(
     if not budget:
         raise HTTPException(
             status_code=404,
-            detail="Budget not found"
+            detail="Budget not found",
         )
 
     return budget
+
 
 @router.put(
     "/",
@@ -79,7 +77,7 @@ def get_budget(
 def update_budget(
     budget: BudgetUpdate,
     current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     db_budget = (
         db.query(Budget)
@@ -90,10 +88,10 @@ def update_budget(
     if not db_budget:
         raise HTTPException(
             status_code=404,
-            detail="Budget not found"
+            detail="Budget not found",
         )
 
-    db_budget.monthly_limit = budget.monthly_limit
+    db_budget.amount = budget.amount
 
     db.commit()
     db.refresh(db_budget)

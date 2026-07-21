@@ -1,12 +1,5 @@
-from sqlalchemy import (
-    Column,
-    Integer,
-    Float,
-    ForeignKey,
-    DateTime
-)
+from sqlalchemy import Column, Integer, ForeignKey
 from sqlalchemy.orm import relationship
-from datetime import datetime
 
 from app.db.database import Base
 
@@ -16,27 +9,16 @@ class Budget(Base):
 
     id = Column(Integer, primary_key=True, index=True)
 
-    monthly_limit = Column(Float, nullable=False)
+    amount = Column(Integer, nullable=False)
 
     user_id = Column(
         Integer,
         ForeignKey("users.id"),
         unique=True,
-        nullable=False
+        nullable=False,
     )
 
-    created_at = Column(
-        DateTime,
-        default=datetime.utcnow
-    )
-
-    updated_at = Column(
-        DateTime,
-        default=datetime.utcnow,
-        onupdate=datetime.utcnow
-    )
-
-    owner = relationship(
+    user = relationship(
         "User",
         back_populates="budget"
     )
